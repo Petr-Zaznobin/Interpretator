@@ -82,7 +82,7 @@ void ReadCmd::Parsing(string cmd_) {
                 case 'm':
                     procMain();
                     break;
-                case '{':
+                case '}':
                     procBrack();
                     break;
             }
@@ -115,6 +115,8 @@ void ReadCmd::procValue(string type, string cmd_) {
                     data.push_back(cmd_[i]);
                 }
                 int intData = stringToInt(data);
+                if (vals.count(name)>0)
+                    throw invalid_argument("Such value exist");
                 vals.insert(pair<string, int>(name, intData));
                 brackets.push(name);
                 break;
@@ -135,7 +137,8 @@ void ReadCmd::procValue(string type, string cmd_) {
                     data.push_back(cmd_[i]);
                 }
                 int doubleData = stringToDouble(data);
-                if (vals.)
+                if (vals.count(name) > 0)
+                    throw invalid_argument("Such value exist");
                 vals.insert(pair<string, int>(name, doubleData));
                 brackets.push(name);
                 break;
@@ -156,6 +159,8 @@ void ReadCmd::procValue(string type, string cmd_) {
                     data.push_back(cmd_[i]);
                 }
                 int floatData = stringToFloat(data);
+                if (vals.count(name) > 0)
+                    throw invalid_argument("Such value exist");
                 vals.insert(pair<string, int>(name, floatData));
                 brackets.push(name);
                 break;
@@ -175,6 +180,8 @@ void ReadCmd::procValue(string type, string cmd_) {
                     data.push_back(cmd_[i]);
                 }
                 int charData = stringToChar(data);
+                if (vals.count(name) > 0)
+                    throw invalid_argument("Such value exist");
                 vals.insert(pair<string, int>(name, charData));
                 brackets.push(name);
                 break;
