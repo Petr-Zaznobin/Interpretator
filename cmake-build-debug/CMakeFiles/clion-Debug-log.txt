@@ -1,6 +1,4 @@
 /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/Applications/CLion.app/Contents/bin/ninja/mac/aarch64/ninja -G Ninja -S "/Users/petrzaznobin/Desktop/High School/4 семестр/ЯиМП/mp2-2023-lab4-polinoms-main/Interpretator" -B "/Users/petrzaznobin/Desktop/High School/4 семестр/ЯиМП/mp2-2023-lab4-polinoms-main/Interpretator/cmake-build-debug"
-CMake Error at gtest/CMakeLists.txt:3:
-  Parse error.  Function missing ending ")".  End of file reached.
-
-
--- Configuring incomplete, errors occurred!
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /Users/petrzaznobin/Desktop/High School/4 семестр/ЯиМП/mp2-2023-lab4-polinoms-main/Interpretator/cmake-build-debug

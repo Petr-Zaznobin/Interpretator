@@ -15,6 +15,7 @@ using namespace std;
 int main(){
     string cmd;
     ifstream fin;
+    size_t count = 0;
     fin.open("hello.txt"); // окрываем файл для чтения
     if (!fin.is_open()) {
         cout << "ERROR OPEN!";
@@ -23,9 +24,24 @@ int main(){
     else{
         while (getline(fin, cmd))
         {
-            ReadCmd rc(cmd);
-            rc.Parsing();
+           count++;
         }
     }
     fin.close();     // закрываем файл
+
+    fin.open("hello.txt"); // окрываем файл для чтения
+    string* cmds = new string[count];
+    if (!fin.is_open()) {
+        cout << "ERROR OPEN!";
+    }
+    else{
+        int i = 0;
+        while (getline(fin, cmd))
+        {
+            cmds[i++] = cmd;
+        }
+    }
+    fin.close();     // закрываем файл
+    ReadCmd rc(cmds, count);
+
 }
