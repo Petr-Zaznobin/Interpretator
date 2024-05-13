@@ -262,10 +262,14 @@ void ReadCmd::procValue(string type, string cmd_) {
 
                     case '%':
                         if (found == vals.cend()) {
+                            if (vals.find(val2)->second != 0) {
                             vals.insert(pair<string, int>(name,
                                                           int(vals.find(val1)->second) % int(vals.find(val2)->second)));
+                            } else { throw logic_error("Div 0"); }
                         } else {
+                            if (vals.find(val2)->second != 0) {
                             vals.find(name)->second = int(vals.find(val1)->second) % int(vals.find(val2)->second);
+                            } else { throw logic_error("Div 0"); }
                         }
                         break;
                 }
