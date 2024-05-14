@@ -7,21 +7,6 @@ TEST(ReadCmd, can_creat_ReadCmd)
 	ASSERT_NO_THROW(ReadCmd(tmp, 5));
 }
 
-//getCmds??
-//parsing??
-
-/*TEST(ReadCmd, can_get_cmds_from_ReadCmd)
-{
-	string* cmds = new string[5];
-	cmds[0] = "main() {";
-	cmds[1] = "int i = 0;";
-	cmds[2] = "i = 7 + 5;";
-	cmds[3] = "i = 10 - 7;";
-	cmds[4] = "}";
-	ReadCmd code(cmds, 5);
-
-	ASSERT_NO_THROW(code.getCmds());
-}*/
 
 TEST(ReadCmd, can_make_char_from_string)
 {
@@ -115,7 +100,6 @@ TEST(ReadCmd, can_make_string_from_int)
 	string* tmp = new string[5];
 	ReadCmd code(tmp, 5);
 	int a = 10;
-	string b = "10";
 	ASSERT_NO_THROW(code.intToString(a));
 }
 TEST(ReadCmd, correct_make_string_from_int)
@@ -126,3 +110,48 @@ TEST(ReadCmd, correct_make_string_from_int)
 	string b = "10";
 	EXPECT_EQ(code.intToString(a), b);
 }
+TEST(ReadCmd, can_pars_cmd_with_new_value)
+{
+	string* cmds = new string[3];
+	cmds[0] = "main() {";
+	cmds[1] = "int i;";
+	cmds[2] = "}";
+	ReadCmd code(cmds, 3);
+
+	ASSERT_NO_THROW(code.Parsing(cmds[1]));
+}
+TEST(ReadCmd, can_pars_cmd_with_value)
+{
+	string* cmds = new string[4];
+	cmds[0] = "main() {";
+	cmds[1] = "int i;";
+	cmds[2] = "i = 5;";
+	cmds[3] = "}";
+	ReadCmd code(cmds, 4);
+
+	ASSERT_NO_THROW(code.Parsing(cmds[1]));
+}
+//getCmds??
+//parsing??
+
+
+TEST(ReadCmd, can_pars_cmd_with_inicial_of_value)
+{
+	string* cmds = new string[3];
+	cmds[0] = "main() {";
+	cmds[1] = "int i = 0;";
+	cmds[2] = "}";
+	ReadCmd code(cmds, 3);
+
+	ASSERT_NO_THROW(code.Parsing(cmds[1]));
+}
+/*TEST(ReadCmd, can_get_cmds_from_ReadCmd)
+{
+	string* cmds = new string[3];
+	cmds[0] = "main() {";
+	cmds[1] = "int i = 0;";
+	cmds[2] = "}";
+	ReadCmd code(cmds, 3);
+
+	ASSERT_NO_THROW(code.getCmds());
+}*/
