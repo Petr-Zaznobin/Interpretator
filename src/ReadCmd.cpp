@@ -1010,11 +1010,13 @@ string ReadCmd::intToString(int data) {
     int tmp = data;
     int i = 0;
     string res = "";
-    while (tmp!=0){
-        res[i] = (tmp%10 + 48);
-        res[i]/=10;
+    while (tmp>0){
+        res.push_back(tmp%10 + 48);
+        tmp/=10;
+        i++;
     }
-    return res;
+    reverse(res.begin(), res.end());
+    cout << res;
 }
 
 /*bool ReadCmd::isDigit(const char& first_symbol)
