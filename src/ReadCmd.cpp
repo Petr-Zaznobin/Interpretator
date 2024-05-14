@@ -1016,7 +1016,7 @@ string ReadCmd::intToString(int data) {
         i++;
     }
     reverse(res.begin(), res.end());
-    cout << res;
+    return res;
 }
 
 /*bool ReadCmd::isDigit(const char& first_symbol)
