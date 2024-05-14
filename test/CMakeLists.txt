@@ -4,5 +4,6 @@ set(target interpretator_test)
 file(GLOB hdrs "*.h*")
 file(GLOB srcs "*.cpp" "../src/*.cpp")
 
-add_executable(${target} ${srcs} ${hdrs})
+add_executable(${target} ${srcs} ${hdrs}
+        test_ReadCmd.cpp)
 target_link_libraries(${target} gtest)

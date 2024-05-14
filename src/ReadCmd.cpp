@@ -58,7 +58,7 @@ char ReadCmd::case_symb(string symb) {
     else {throw invalid_argument("ERROR IN CONDITION");}
 }
 
-//ДОБАВИТЬ СЛУЧАЙ ЗАКРЫТИЯ СКОБКИ И CЛУЧАЙ main()!!!!!
+//ДОБАВИТЬ СЛУЧАЙ ЗАКРЫТИЯ СКОБКИ!!!!!
 void ReadCmd::Parsing(string cmd_) {
     cmd = cmd_;
     if(should_read_cmd == true){
@@ -276,6 +276,280 @@ void ReadCmd::procValue(string type, string cmd_) {
             }
         }
     }
+}
+
+void ReadCmd::changeValue() {
+    string main_var;
+    string sign;
+    string first_var;
+    string second_var;
+    string data_type;
+    regex firstTypeRegex("(.*?)\\s([=|+=|-=|/=|*=])\\s(.*?);"); //var += 5;
+    regex secondTypeRegex("(.*?)\\s=\\s(.*?)\\s([+|-|*|/])\\s(.*?);"); //var = 3+2
+    smatch match;
+    if (regex_search(cmd, match, firstTypeRegex)){
+        main_var = match[1];
+        sign = match[2];
+        first_var = match[3];
+        if (vals.count(main_var.insert(0, "i"))==1){
+            data_type = "i";
+        }
+        else if (main_var.erase(0,1) == match[1] && vals.count(main_var.insert(0, "d"))==1){
+            data_type = "d";
+        }
+        else if (main_var.erase(0,1) == match[1] && vals.count(main_var.insert(0, "f"))==1){
+            data_type = "f";
+        }
+        else if (main_var.erase(0,1) == match[1] && vals.count(main_var.insert(0, "c"))==1){
+            data_type = "c";
+        }
+        else{
+            throw invalid_argument("No such main var in change_val");
+        }
+        if (int(first_var[0]) < 48 || int(first_var[0] > 57)){ //встретили переменную
+            if(vals.count(first_var.insert(0, data_type)) == 0){
+                throw invalid_argument("No such first var in change_val");
+            }
+            else{
+                if (sign == "="){
+                    vals[main_var] = vals[first_var];
+                }
+                else if (sign == "+="){
+                    vals[main_var]+=vals[first_var];
+                }
+                else if (sign == "-="){
+                    vals[main_var]-=vals[first_var];
+                }
+                else if (sign == "*="){
+                    vals[main_var]*=vals[first_var];
+                }
+                else if (sign == "/="){
+                    vals[main_var]/=vals[first_var];
+                }
+            }
+        }
+        else{ //встретили чиселко
+            if (data_type == "i") {
+                int argument = stringToInt(first_var);
+                if (sign == "="){
+                    vals[main_var] = argument;
+                }
+                else if (sign == "+="){
+                    vals[main_var]+=argument;
+                }
+                else if (sign == "-="){
+                    vals[main_var]-=argument;
+                }
+                else if (sign == "*="){
+                    vals[main_var]*=argument;
+                }
+                else if (sign == "/="){
+                    vals[main_var]/=argument;
+                }
+            }
+            else if (data_type == "d"){
+                double argument  = stringToDouble(first_var);
+                if (sign == "="){
+                    vals[main_var] = argument;
+                }
+                else if (sign == "+="){
+                    vals[main_var]+=argument;
+                }
+                else if (sign == "-="){
+                    vals[main_var]-=argument;
+                }
+                else if (sign == "*="){
+                    vals[main_var]*=argument;
+                }
+                else if (sign == "/="){
+                    vals[main_var]/=argument;
+                }
+            }
+            else if(data_type == "f"){
+                float argument  = stringToFloat(first_var);
+                if (sign == "="){
+                    vals[main_var] = argument;
+                }
+                else if (sign == "+="){
+                    vals[main_var]+=argument;
+                }
+                else if (sign == "-="){
+                    vals[main_var]-=argument;
+                }
+                else if (sign == "*="){
+                    vals[main_var]*=argument;
+                }
+                else if (sign == "/="){
+                    vals[main_var]/=argument;
+                }
+            }
+            else if(data_type == "c"){
+                char argument  = stringToChar(first_var);
+                if (sign == "="){
+                    vals[main_var] = argument;
+                }
+                else if (sign == "+="){
+                    vals[main_var]+=argument;
+                }
+                else if (sign == "-="){
+                    vals[main_var]-=argument;
+                }
+                else if (sign == "*="){
+                    vals[main_var]*=argument;
+                }
+                else if (sign == "/="){
+                    vals[main_var]/=argument;
+                }
+            }
+        }
+    }
+    else if (regex_search(cmd, match, secondTypeRegex)){
+        main_var = match[1];
+        sign = match[3];
+        first_var = match[2];
+        second_var = match[4];
+        bool first_is_var = false;
+        bool second_is_var = false;
+        if (vals.count(main_var.insert(0, "i"))==1){
+            data_type = "i";
+        }
+        else if (main_var.erase(0,1) == match[1] && vals.count(main_var.insert(0, "d"))==1){
+            data_type = "d";
+        }
+        else if (main_var.erase(0,1) == match[1] && vals.count(main_var.insert(0, "f"))==1){
+            data_type = "f";
+        }
+        else if (main_var.erase(0,1) == match[1] && vals.count(main_var.insert(0, "c"))==1){
+            data_type = "c";
+        }
+        else{
+            throw invalid_argument("No such main var in change_val");
+        }
+
+        if (int(first_var[0]) < 48 || int(first_var[0] > 57)){
+            if(vals.count(first_var.insert(0, data_type)) == 0){
+                throw invalid_argument("No such first var in change_val");
+            }
+            else{first_is_var = true;}
+        }
+        if (int(second_var[0]) < 48 || int(second_var[0] > 57)){
+            if(vals.count(second_var.insert(0, data_type)) == 0){
+                throw invalid_argument("No such second var in change_val");
+            }
+            else{second_is_var = true;}
+        }
+
+        if (sign == "+"){
+            if (first_is_var && second_is_var){
+                vals[main_var] = vals[first_var] + vals[second_var];
+            }
+            else if (first_is_var && !second_is_var){
+                if(data_type == "i"){vals[main_var] = vals[first_var] + stringToInt(second_var);}
+                else if(data_type == "d"){vals[main_var] = vals[first_var] + stringToDouble(second_var);}
+                else if(data_type == "f"){vals[main_var] = vals[first_var] + stringToFloat(second_var);}
+                else if(data_type == "c"){vals[main_var] = vals[first_var] + stringToChar(second_var);}
+            }
+            else if(!first_is_var && second_is_var){
+                if (data_type == "i"){vals[main_var] = stringToInt(first_var) + vals[second_var];}
+                else if (data_type == "d"){vals[main_var] = stringToDouble(first_var) + vals[second_var];}
+                else if (data_type == "f"){vals[main_var] = stringToFloat(first_var) + vals[second_var];}
+                else if (data_type == "c"){vals[main_var] = stringToChar(first_var) + vals[second_var];}
+            }
+            else if (!first_is_var && !second_is_var){
+                if (data_type == "i"){vals[main_var] = stringToInt(first_var) + stringToInt(second_var);}
+                else if (data_type == "d"){vals[main_var] = stringToDouble(first_var) + stringToDouble(second_var);}
+                else if (data_type == "f"){vals[main_var] = stringToFloat(first_var) + stringToFloat(second_var);}
+                else if (data_type == "c"){vals[main_var] = stringToChar(first_var) + stringToChar(second_var);}
+            }
+        }
+        else if (sign == "-"){
+            if (first_is_var && second_is_var){
+                vals[main_var] = vals[first_var] - vals[second_var];
+            }
+            else if (first_is_var && !second_is_var){
+                if(data_type == "i"){vals[main_var] = vals[first_var] - stringToInt(second_var);}
+                else if(data_type == "d"){vals[main_var] = vals[first_var] - stringToDouble(second_var);}
+                else if(data_type == "f"){vals[main_var] = vals[first_var] - stringToFloat(second_var);}
+                else if(data_type == "c"){vals[main_var] = vals[first_var] - stringToChar(second_var);}
+            }
+            else if(!first_is_var && second_is_var){
+                if (data_type == "i"){vals[main_var] = stringToInt(first_var) - vals[second_var];}
+                else if (data_type == "d"){vals[main_var] = stringToDouble(first_var) - vals[second_var];}
+                else if (data_type == "f"){vals[main_var] = stringToFloat(first_var) - vals[second_var];}
+                else if (data_type == "c"){vals[main_var] = stringToChar(first_var) - vals[second_var];}
+            }
+            else if (!first_is_var && !second_is_var){
+                if (data_type == "i"){vals[main_var] = stringToInt(first_var) - stringToInt(second_var);}
+                else if (data_type == "d"){vals[main_var] = stringToDouble(first_var) - stringToDouble(second_var);}
+                else if (data_type == "f"){vals[main_var] = stringToFloat(first_var) - stringToFloat(second_var);}
+                else if (data_type == "c"){vals[main_var] = stringToChar(first_var) - stringToChar(second_var);}
+            }
+        }
+        else if (sign == "*"){
+            if (first_is_var && second_is_var){
+                vals[main_var] = vals[first_var] * vals[second_var];
+            }
+            else if (first_is_var && !second_is_var){
+                if(data_type == "i"){vals[main_var] = vals[first_var] * stringToInt(second_var);}
+                else if(data_type == "d"){vals[main_var] = vals[first_var] * stringToDouble(second_var);}
+                else if(data_type == "f"){vals[main_var] = vals[first_var] * stringToFloat(second_var);}
+                else if(data_type == "c"){vals[main_var] = vals[first_var] * stringToChar(second_var);}
+            }
+            else if(!first_is_var && second_is_var){
+                if (data_type == "i"){vals[main_var] = stringToInt(first_var) * vals[second_var];}
+                else if (data_type == "d"){vals[main_var] = stringToDouble(first_var) * vals[second_var];}
+                else if (data_type == "f"){vals[main_var] = stringToFloat(first_var) * vals[second_var];}
+                else if (data_type == "c"){vals[main_var] = stringToChar(first_var) * vals[second_var];}
+            }
+            else if (!first_is_var && !second_is_var){
+                if (data_type == "i"){vals[main_var] = stringToInt(first_var) * stringToInt(second_var);}
+                else if (data_type == "d"){vals[main_var] = stringToDouble(first_var) * stringToDouble(second_var);}
+                else if (data_type == "f"){vals[main_var] = stringToFloat(first_var) * stringToFloat(second_var);}
+                else if (data_type == "c"){vals[main_var] = stringToChar(first_var) * stringToChar(second_var);}
+            }
+        }
+        else if (sign == "/"){
+            if (first_is_var && second_is_var){
+                vals[main_var] = vals[first_var] / vals[second_var];
+            }
+            else if (first_is_var && !second_is_var){
+                if(data_type == "i"){vals[main_var] = vals[first_var] / stringToInt(second_var);}
+                else if(data_type == "d"){vals[main_var] = vals[first_var] / stringToDouble(second_var);}
+                else if(data_type == "f"){vals[main_var] = vals[first_var] / stringToFloat(second_var);}
+                else if(data_type == "c"){vals[main_var] = vals[first_var] / stringToChar(second_var);}
+            }
+            else if(!first_is_var && second_is_var){
+                if (data_type == "i"){vals[main_var] = stringToInt(first_var) / vals[second_var];}
+                else if (data_type == "d"){vals[main_var] = stringToDouble(first_var) / vals[second_var];}
+                else if (data_type == "f"){vals[main_var] = stringToFloat(first_var) / vals[second_var];}
+                else if (data_type == "c"){vals[main_var] = stringToChar(first_var) / vals[second_var];}
+            }
+            else if (!first_is_var && !second_is_var){
+                if (data_type == "i"){vals[main_var] = stringToInt(first_var) / stringToInt(second_var);}
+                else if (data_type == "d"){vals[main_var] = stringToDouble(first_var) / stringToDouble(second_var);}
+                else if (data_type == "f"){vals[main_var] = stringToFloat(first_var) / stringToFloat(second_var);}
+                else if (data_type == "c"){vals[main_var] = stringToChar(first_var) / stringToChar(second_var);}
+            }
+        }
+        else if (sign == "%"){
+            if (first_is_var && second_is_var){
+                if (data_type == "i"){
+                    vals[main_var] = int(vals[first_var]) % int(vals[second_var]);
+                }
+
+            }
+            else if (first_is_var && !second_is_var){
+                if(data_type == "i"){vals[main_var] = int(vals[first_var]) % int(stringToInt(second_var));}
+            }
+            else if(!first_is_var && second_is_var){
+                if (data_type == "i"){vals[main_var] = int(stringToInt(first_var)) - int(vals[second_var]);}
+            }
+            else if (!first_is_var && !second_is_var){
+                if (data_type == "i"){vals[main_var] = int(stringToInt(first_var)) - int(stringToInt(second_var));}
+            }
+        }
+    }
+    else {throw invalid_argument("error in change value");}
 }
 
 void ReadCmd::procIf() {
@@ -542,7 +816,7 @@ void ReadCmd::procFor() {
                 first_name.insert(0, "i");
             }
             else if (tmp.erase(0,1) == first_name && vals.count(tmp.insert(0, "d"))==1){
-                first_name.insert(0, "d");//////////стояло i, скорее всего ошибся, исправила
+                first_name.insert(0, "d");
             }
             else if (tmp.erase(0,1) == first_name && vals.count(tmp.insert(0, "f"))==1){
                 first_name.insert(0, "f");

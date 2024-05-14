@@ -98,6 +98,13 @@ build samples/CMakeFiles/interpretator.dir/main.cpp.o: CXX_COMPILER__interpretat
   OBJECT_DIR = samples/CMakeFiles/interpretator.dir
   OBJECT_FILE_DIR = samples/CMakeFiles/interpretator.dir
 
+build samples/CMakeFiles/interpretator.dir/__/test/test_ReadCmd.cpp.o: CXX_COMPILER__interpretator_unscanned_Debug /Users/petrzaznobin/Desktop/High$ School/4$ семестр/ЯиМП/mp2-2023-lab4-polinoms-main/Interpretator/test/test_ReadCmd.cpp || cmake_object_order_depends_target_interpretator
+  DEP_FILE = samples/CMakeFiles/interpretator.dir/__/test/test_ReadCmd.cpp.o.d
+  FLAGS = -g -std=gnu++14 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -fcolor-diagnostics
+  INCLUDES = -I"/Users/petrzaznobin/Desktop/High School/4 семестр/ЯиМП/mp2-2023-lab4-polinoms-main/Interpretator/include" -I"/Users/petrzaznobin/Desktop/High School/4 семестр/ЯиМП/mp2-2023-lab4-polinoms-main/Interpretator/gtest"
+  OBJECT_DIR = samples/CMakeFiles/interpretator.dir
+  OBJECT_FILE_DIR = samples/CMakeFiles/interpretator.dir/__/test
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target interpretator
@@ -106,7 +113,7 @@ build samples/CMakeFiles/interpretator.dir/main.cpp.o: CXX_COMPILER__interpretat
 #############################################
 # Link the executable samples/interpretator
 
-build samples/interpretator: CXX_EXECUTABLE_LINKER__interpretator_Debug samples/CMakeFiles/interpretator.dir/__/src/ReadBlock.cpp.o samples/CMakeFiles/interpretator.dir/__/src/ReadCmd.cpp.o samples/CMakeFiles/interpretator.dir/main.cpp.o
+build samples/interpretator: CXX_EXECUTABLE_LINKER__interpretator_Debug samples/CMakeFiles/interpretator.dir/__/src/ReadBlock.cpp.o samples/CMakeFiles/interpretator.dir/__/src/ReadCmd.cpp.o samples/CMakeFiles/interpretator.dir/main.cpp.o samples/CMakeFiles/interpretator.dir/__/test/test_ReadCmd.cpp.o
   FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk
   OBJECT_DIR = samples/CMakeFiles/interpretator.dir
   POST_BUILD = :
@@ -165,6 +172,13 @@ build test/CMakeFiles/interpretator_test.dir/__/src/ReadCmd.cpp.o: CXX_COMPILER_
   OBJECT_DIR = test/CMakeFiles/interpretator_test.dir
   OBJECT_FILE_DIR = test/CMakeFiles/interpretator_test.dir/__/src
 
+build test/CMakeFiles/interpretator_test.dir/test_ReadCmd.cpp.o: CXX_COMPILER__interpretator_test_unscanned_Debug /Users/petrzaznobin/Desktop/High$ School/4$ семестр/ЯиМП/mp2-2023-lab4-polinoms-main/Interpretator/test/test_ReadCmd.cpp || cmake_object_order_depends_target_interpretator_test
+  DEP_FILE = test/CMakeFiles/interpretator_test.dir/test_ReadCmd.cpp.o.d
+  FLAGS = -g -std=gnu++14 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -fcolor-diagnostics
+  INCLUDES = -I"/Users/petrzaznobin/Desktop/High School/4 семестр/ЯиМП/mp2-2023-lab4-polinoms-main/Interpretator/include" -I"/Users/petrzaznobin/Desktop/High School/4 семестр/ЯиМП/mp2-2023-lab4-polinoms-main/Interpretator/gtest"
+  OBJECT_DIR = test/CMakeFiles/interpretator_test.dir
+  OBJECT_FILE_DIR = test/CMakeFiles/interpretator_test.dir
+
 build test/CMakeFiles/interpretator_test.dir/test_main.cpp.o: CXX_COMPILER__interpretator_test_unscanned_Debug /Users/petrzaznobin/Desktop/High$ School/4$ семестр/ЯиМП/mp2-2023-lab4-polinoms-main/Interpretator/test/test_main.cpp || cmake_object_order_depends_target_interpretator_test
   DEP_FILE = test/CMakeFiles/interpretator_test.dir/test_main.cpp.o.d
   FLAGS = -g -std=gnu++14 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -fcolor-diagnostics
@@ -180,7 +194,7 @@ build test/CMakeFiles/interpretator_test.dir/test_main.cpp.o: CXX_COMPILER__inte
 #############################################
 # Link the executable test/interpretator_test
 
-build test/interpretator_test: CXX_EXECUTABLE_LINKER__interpretator_test_Debug test/CMakeFiles/interpretator_test.dir/__/src/ReadBlock.cpp.o test/CMakeFiles/interpretator_test.dir/__/src/ReadCmd.cpp.o test/CMakeFiles/interpretator_test.dir/test_main.cpp.o | gtest/libgtest.a || gtest/libgtest.a
+build test/interpretator_test: CXX_EXECUTABLE_LINKER__interpretator_test_Debug test/CMakeFiles/interpretator_test.dir/__/src/ReadBlock.cpp.o test/CMakeFiles/interpretator_test.dir/__/src/ReadCmd.cpp.o test/CMakeFiles/interpretator_test.dir/test_ReadCmd.cpp.o test/CMakeFiles/interpretator_test.dir/test_main.cpp.o | gtest/libgtest.a || gtest/libgtest.a
   FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk
   LINK_LIBRARIES = gtest/libgtest.a
   OBJECT_DIR = test/CMakeFiles/interpretator_test.dir
@@ -247,6 +261,13 @@ build gtest/CMakeFiles/gtest.dir/__/src/ReadBlock.cpp.o: CXX_COMPILER__gtest_uns
   OBJECT_DIR = gtest/CMakeFiles/gtest.dir
   OBJECT_FILE_DIR = gtest/CMakeFiles/gtest.dir/__/src
 
+build gtest/CMakeFiles/gtest.dir/__/test/test_ReadCmd.cpp.o: CXX_COMPILER__gtest_unscanned_Debug /Users/petrzaznobin/Desktop/High$ School/4$ семестр/ЯиМП/mp2-2023-lab4-polinoms-main/Interpretator/test/test_ReadCmd.cpp || cmake_object_order_depends_target_gtest
+  DEP_FILE = gtest/CMakeFiles/gtest.dir/__/test/test_ReadCmd.cpp.o.d
+  FLAGS = -g -std=gnu++14 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -fcolor-diagnostics
+  INCLUDES = -I"/Users/petrzaznobin/Desktop/High School/4 семестр/ЯиМП/mp2-2023-lab4-polinoms-main/Interpretator/include" -I"/Users/petrzaznobin/Desktop/High School/4 семестр/ЯиМП/mp2-2023-lab4-polinoms-main/Interpretator/gtest"
+  OBJECT_DIR = gtest/CMakeFiles/gtest.dir
+  OBJECT_FILE_DIR = gtest/CMakeFiles/gtest.dir/__/test
+
 
 # =============================================================================
 # Link build statements for STATIC_LIBRARY target gtest
@@ -255,7 +276,7 @@ build gtest/CMakeFiles/gtest.dir/__/src/ReadBlock.cpp.o: CXX_COMPILER__gtest_uns
 #############################################
 # Link the static library gtest/libgtest.a
 
-build gtest/libgtest.a: CXX_STATIC_LIBRARY_LINKER__gtest_Debug gtest/CMakeFiles/gtest.dir/gtest-all.cc.o gtest/CMakeFiles/gtest.dir/__/src/ReadCmd.cpp.o gtest/CMakeFiles/gtest.dir/__/src/ReadBlock.cpp.o
+build gtest/libgtest.a: CXX_STATIC_LIBRARY_LINKER__gtest_Debug gtest/CMakeFiles/gtest.dir/gtest-all.cc.o gtest/CMakeFiles/gtest.dir/__/src/ReadCmd.cpp.o gtest/CMakeFiles/gtest.dir/__/src/ReadBlock.cpp.o gtest/CMakeFiles/gtest.dir/__/test/test_ReadCmd.cpp.o
   ARCH_FLAGS = -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk
   LANGUAGE_COMPILE_FLAGS = -g
   OBJECT_DIR = gtest/CMakeFiles/gtest.dir
