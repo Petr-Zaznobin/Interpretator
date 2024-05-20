@@ -189,8 +189,8 @@ TEST(ReadCmd, can_parse_cmds_with_if)
 	cmds[0] = "main() {";
 	cmds[1] = "int i = 5;";
 	cmds[2] = "int a = 0;";
-	cmds[3] = "int b;";
-	cmds[4] = "if (i > 3){";
+	cmds[3] = "int b = 0;";
+	cmds[4] = "if (i > 3) {";
 	cmds[5] = "b = i + a;";
 	cmds[6] = "}";
 	cmds[7] = "}";
@@ -198,7 +198,7 @@ TEST(ReadCmd, can_parse_cmds_with_if)
 
 	ASSERT_NO_THROW(code.getCmds());
 }
-TEST(ReadCmd, can_parse_cmds_with_if)
+TEST(ReadCmd, correct_parse_cmds_with_if)
 {
 	string* cmds = new string[8];
 	cmds[0] = "main() {";
@@ -213,13 +213,363 @@ TEST(ReadCmd, can_parse_cmds_with_if)
 	//EXPECT_EQ(8,);
 
 }
-/*TEST(ReadCmd, can_get_cmds_from_ReadCmd)
+TEST(ReadCmd, can_parse_cmds_with_while)
 {
-	string* cmds = new string[3];
+	string* cmds = new string[8];
 	cmds[0] = "main() {";
-	cmds[1] = "int i = 0;";
-	cmds[2] = "}";
-	ReadCmd code(cmds, 3);
+	cmds[1] = "int i = 5;";
+	cmds[2] = "int a = 2;";
+	cmds[3] = "int b = 0;";
+	cmds[4] = "while (b <= 7) {";
+	cmds[5] = "b = b + i + a;";
+	cmds[6] = "}";
+	cmds[7] = "}";
+	ReadCmd code(cmds, 8);
 
 	ASSERT_NO_THROW(code.getCmds());
-}*/
+}
+TEST(ReadCmd, correct_parse_cmds_with_while)
+{
+	string* cmds = new string[8];
+	cmds[0] = "main() {";
+	cmds[1] = "int i = 5;";
+	cmds[2] = "int a = 2;";
+	cmds[3] = "int b = 0;";
+	cmds[4] = "while (b <= 7) {";
+	cmds[5] = "b = b + i + a;";
+	cmds[6] = "}";
+	cmds[7] = "}";
+	ReadCmd code(cmds, 8);
+	code.getCmds();
+	//EXPECT_EQ(14,);
+
+}
+TEST(ReadCmd, can_parse_cmds_with_for)
+{
+	string* cmds = new string[7];
+	cmds[0] = "main() {";
+	cmds[1] = "int a = 2;";
+	cmds[2] = "int b = 0;";
+	cmds[3] = "for (int i = 0; i < 3; i++) {";
+	cmds[4] = "b = b + a;";
+	cmds[5] = "}";
+	cmds[6] = "}";
+	ReadCmd code(cmds, 7);
+
+	ASSERT_NO_THROW(code.getCmds());
+}
+TEST(ReadCmd, correct_parse_cmds_with_for)
+{
+	string* cmds = new string[7];
+	cmds[0] = "main() {";
+	cmds[1] = "int a = 2;";
+	cmds[2] = "int b = 0;";
+	cmds[3] = "for (int i = 0; i < 3; i++) {";
+	cmds[4] = "b = b + a;";
+	cmds[5] = "}";
+	cmds[6] = "}";
+	ReadCmd code(cmds, 7);
+	code.getCmds();
+	//EXPECT_EQ(6,);
+
+}
+TEST(ReadCmd, can_parse_cmds_with_while_and_if_inside)
+{
+	string* cmds = new string[9];
+	cmds[0] = "main() {";
+	cmds[1] = "int i = 5;";
+	cmds[2] = "int b = 2;";
+	cmds[3] = "while (b <= 7) {";
+	cmds[4] = "if (i > 3) {";
+	cmds[5] = "b = b + i;";
+	cmds[6] = "}";
+	cmds[7] = "}";
+	cmds[8] = "}";
+	ReadCmd code(cmds, 9);
+
+	ASSERT_NO_THROW(code.getCmds());
+}
+TEST(ReadCmd, correct_parse_cmds_with_while_and_if_inside)
+{
+	string* cmds = new string[9];
+	cmds[0] = "main() {";
+	cmds[1] = "int i = 5;";
+	cmds[2] = "int b = 2;";
+	cmds[3] = "while (b <= 7) {";
+	cmds[4] = "if (i > 3) {";
+	cmds[5] = "b = b + i;";
+	cmds[6] = "}";
+	cmds[7] = "}";
+	cmds[8] = "}";
+	ReadCmd code(cmds, 9);
+	code.getCmds();
+	//EXPECT_EQ(12,);
+}
+TEST(ReadCmd, can_parse_cmds_with_while_and_for_inside)
+{
+	string* cmds = new string[9];
+	cmds[0] = "main() {";
+	cmds[1] = "int i;";
+	cmds[2] = "int b = 2;";
+	cmds[3] = "while (b <= 7) {";
+	cmds[4] = "for (i = 1; i < 5; i++) {";
+	cmds[5] = "b = b + i;";
+	cmds[6] = "}";
+	cmds[7] = "}";
+	cmds[8] = "}";
+	ReadCmd code(cmds, 9);
+
+	ASSERT_NO_THROW(code.getCmds());
+}
+TEST(ReadCmd, correct_parse_cmds_with_while_and_for_inside)
+{
+	string* cmds = new string[9];
+	cmds[0] = "main() {";
+	cmds[1] = "int i;";
+	cmds[2] = "int b = 2;";
+	cmds[3] = "while (b < 15) {";
+	cmds[4] = "for (i = 1; i < 5; i++) {";
+	cmds[5] = "b = b + i;";
+	cmds[6] = "}";
+	cmds[7] = "}";
+	cmds[8] = "}";
+	ReadCmd code(cmds, 9);
+	code.getCmds();
+	//EXPECT_EQ(22,);
+}
+TEST(ReadCmd, can_parse_cmds_with_while_and_while_inside)
+{
+	string* cmds = new string[10];
+	cmds[0] = "main() {";
+	cmds[1] = "int i = 1;";
+	cmds[2] = "int b = 2;";
+	cmds[3] = "while (b <= 7) {";
+	cmds[4] = "while (i < 5) {";
+	cmds[5] = "b = b + i;";
+	cmds[6] = "i = i + 1";
+	cmds[7] = "}";
+	cmds[8] = "}";
+	cmds[9] = "}";
+	ReadCmd code(cmds, 10);
+
+	ASSERT_NO_THROW(code.getCmds());
+}
+TEST(ReadCmd, correct_parse_cmds_with_while_and_while_inside)
+{
+	string* cmds = new string[10];
+	cmds[0] = "main() {";
+	cmds[1] = "int i = 1;";
+	cmds[2] = "int b = 2;";
+	cmds[3] = "while (b <= 7) {";
+	cmds[4] = "while (i < 5) {";
+	cmds[5] = "b = b + i;";
+	cmds[6] = "i = i + 1";
+	cmds[7] = "}";
+	cmds[8] = "}";
+	cmds[9] = "}";
+	ReadCmd code(cmds, 10);
+	code.getCmds();
+	//EXPECT_EQ(22,);
+}
+TEST(ReadCmd, can_parse_cmds_with_for_and_for_inside)
+{
+	string* cmds = new string[10];
+	cmds[0] = "main() {";
+	cmds[1] = "int i;";
+	cmds[2] = "int b = 2;";
+	cmds[3] = "int c = 0;";
+	cmds[4] = "for (b = 1; b < 3; b++) {";
+	cmds[5] = "for (i = 1; i < 3; i++) {";
+	cmds[6] = "c = b + i;";
+	cmds[7] = "}";
+	cmds[8] = "}";
+	cmds[9] = "}";
+	ReadCmd code(cmds, 10);
+
+	ASSERT_NO_THROW(code.getCmds());
+}
+TEST(ReadCmd, correct_parse_cmds_with_for_and_for_inside)
+{
+	string* cmds = new string[10];
+	cmds[0] = "main() {";
+	cmds[1] = "int i;";
+	cmds[2] = "int b = 2;";
+	cmds[3] = "int c = 0;";
+	cmds[4] = "for (b = 1; b < 3; b++) {";
+	cmds[5] = "for (i = 1; i < 3; i++) {";
+	cmds[6] = "c = b + i;";
+	cmds[7] = "}";
+	cmds[8] = "}";
+	cmds[9] = "}";
+	ReadCmd code(cmds, 10);
+	code.getCmds();
+	//EXPECT_EQ(12,);
+}
+TEST(ReadCmd, can_parse_cmds_with_for_and_while_inside)
+{
+	string* cmds = new string[11];
+	cmds[0] = "main() {";
+	cmds[1] = "int i = 0;";
+	cmds[2] = "int b = 2;";
+	cmds[3] = "int c = 0;";
+	cmds[4] = "for (b = 1; b < 3; b++) {";
+	cmds[5] = "while (i < 4) {";
+	cmds[6] = "c = b + i;";
+	cmds[7] = "i = i + 1;";
+	cmds[8] = "}";
+	cmds[9] = "}";
+	cmds[10] = "}";
+	ReadCmd code(cmds, 11);
+
+	ASSERT_NO_THROW(code.getCmds());
+}
+TEST(ReadCmd, correct_parse_cmds_with_for_and_while_inside)
+{
+	string* cmds = new string[11];
+	cmds[0] = "main() {";
+	cmds[1] = "int i = 0;";
+	cmds[2] = "int b = 2;";
+	cmds[3] = "int c = 0;";
+	cmds[4] = "for (b = 1; b < 3; b++) {";
+	cmds[5] = "while (i < 4) {";
+	cmds[6] = "c = b + i;";
+	cmds[7] = "i = i + 1;";
+	cmds[8] = "}";
+	cmds[9] = "}";
+	cmds[10] = "}";
+	ReadCmd code(cmds, 11);
+	code.getCmds();
+	//EXPECT_EQ(10,);
+}
+TEST(ReadCmd, can_parse_cmds_with_for_and_if_inside)
+{
+	string* cmds = new string[11];
+	cmds[0] = "main() {";
+	cmds[1] = "int i = 0;";
+	cmds[2] = "int b = 2;";
+	cmds[3] = "int c = 0;";
+	cmds[4] = "for (b = 1; b < 3; b++) {";
+	cmds[5] = "if (i < 4) {";
+	cmds[6] = "c = b + i;";
+	cmds[7] = "i = i + 1;";
+	cmds[8] = "}";
+	cmds[9] = "}";
+	cmds[10] = "}";
+	ReadCmd code(cmds, 11);
+
+	ASSERT_NO_THROW(code.getCmds());
+}
+TEST(ReadCmd, can_parse_cmds_with_for_and_if_inside)
+{
+	string* cmds = new string[11];
+	cmds[0] = "main() {";
+	cmds[1] = "int i = 0;";
+	cmds[2] = "int b = 2;";
+	cmds[3] = "int c = 0;";
+	cmds[4] = "for (b = 1; b < 3; b++) {";
+	cmds[5] = "if (i < 4) {";
+	cmds[6] = "c = b + i;";
+	cmds[7] = "i = i + 1;";
+	cmds[8] = "}";
+	cmds[9] = "}";
+	cmds[10] = "}";
+	ReadCmd code(cmds, 11);
+	code.getCmds();
+	//EXPECT_EQ(4,);
+}
+TEST(ReadCmd, can_parse_cmds_with_if_and_while_inside)
+{
+	string* cmds = new string[10];
+	cmds[0] = "main() {";
+	cmds[1] = "int i = 1;";
+	cmds[2] = "int b = 2;";
+	cmds[3] = "if (b <= 7) {";
+	cmds[4] = "while (i < 5) {";
+	cmds[5] = "b = b + i;";
+	cmds[6] = "i = i + 1";
+	cmds[7] = "}";
+	cmds[8] = "}";
+	cmds[9] = "}";
+	ReadCmd code(cmds, 10);
+
+	ASSERT_NO_THROW(code.getCmds());
+}
+TEST(ReadCmd, correct_parse_cmds_with_if_and_while_inside)
+{
+	string* cmds = new string[10];
+	cmds[0] = "main() {";
+	cmds[1] = "int i = 1;";
+	cmds[2] = "int b = 2;";
+	cmds[3] = "if (b <= 7) {";
+	cmds[4] = "while (i < 5) {";
+	cmds[5] = "b = b + i;";
+	cmds[6] = "i = i + 1";
+	cmds[7] = "}";
+	cmds[8] = "}";
+	cmds[9] = "}";
+	ReadCmd code(cmds, 10);
+	code.getCmds();
+	//EXPECT_EQ(12,);
+}
+TEST(ReadCmd, can_parse_cmds_with_if_and_for_inside)
+{
+	string* cmds = new string[9];
+	cmds[0] = "main() {";
+	cmds[1] = "int i;";
+	cmds[2] = "int b = 2;";
+	cmds[3] = "if (b < 3) {";
+	cmds[4] = "for (i = 1; i < 5; i++) {";
+	cmds[5] = "b = b + i;";
+	cmds[6] = "}";
+	cmds[7] = "}";
+	cmds[8] = "}";
+	ReadCmd code(cmds, 9);
+	ASSERT_NO_THROW(code.getCmds());
+}
+TEST(ReadCmd, correct_parse_cmds_with_if_and_for_inside)
+{
+	string* cmds = new string[9];
+	cmds[0] = "main() {";
+	cmds[1] = "int i;";
+	cmds[2] = "int b = 2;";
+	cmds[3] = "if (b < 3) {";
+	cmds[4] = "for (i = 1; i < 5; i++) {";
+	cmds[5] = "b = b + i;";
+	cmds[6] = "}";
+	cmds[7] = "}";
+	cmds[8] = "}";
+	ReadCmd code(cmds, 9);
+	code.getCmds();
+	//EXPECT_EQ(12,);
+}
+TEST(ReadCmd, can_parse_cmds_with_if_and_if_inside)
+{
+	string* cmds = new string[9];
+	cmds[0] = "main() {";
+	cmds[1] = "int i = 3;";
+	cmds[2] = "int b = 2;";
+	cmds[3] = "if (b < 3) {";
+	cmds[4] = "if (i < 5) {";
+	cmds[5] = "b = b + i;";
+	cmds[6] = "}";
+	cmds[7] = "}";
+	cmds[8] = "}";
+	ReadCmd code(cmds, 9);
+	ASSERT_NO_THROW(code.getCmds());
+}
+TEST(ReadCmd, correct_parse_cmds_with_if_and_if_inside)
+{
+	string* cmds = new string[9];
+	cmds[0] = "main() {";
+	cmds[1] = "int i = 3;";
+	cmds[2] = "int b = 2;";
+	cmds[3] = "if (b < 3) {";
+	cmds[4] = "if (i < 5) {";
+	cmds[5] = "b = b + i;";
+	cmds[6] = "}";
+	cmds[7] = "}";
+	cmds[8] = "}";
+	ReadCmd code(cmds, 9);
+	code.getCmds();
+	//EXPECT_EQ(5,);
+}
