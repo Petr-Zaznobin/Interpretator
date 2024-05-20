@@ -205,7 +205,7 @@ TEST(ReadCmd, can_parse_cmds_with_if)
 	cmds[1] = "int i = 5;";
 	cmds[2] = "int a = 3;";
 	cmds[3] = "int b = 0;";
-	cmds[4] = "if (i > 3){";
+	cmds[4] = "if (i > 3) {";
 	cmds[5] = "b = i + a;";
 	cmds[6] = "}";
 	cmds[7] = "}";
