@@ -21,7 +21,8 @@ private:
     map<string, int> funcs; //мапа доступных функций
     map<char, int> ops; //мапа доступных операций
     char case_symb(string symb); //функция, возращающая спец. код знака сравнения
-    bool should_read_cmd = true;
+    stack<bool> should_read_cmd;
+    int count_circles_in_steps = 0; //считает сколько открытых скобок было, когда не должен читать, чтобы попасть в свою скобку
 public:
     ReadCmd(string* cmds, size_t count); //конструктор
     ~ReadCmd(); //деструктор

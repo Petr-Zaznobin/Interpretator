@@ -22,6 +22,7 @@ ReadCmd::ReadCmd(string* cmds_, size_t count) {
                           {'*', 1},
                           {'/', 1},
                           {'%', 1}};
+    should_read_cmd.push(true);
 }
 
 ReadCmd::~ReadCmd() {
@@ -43,13 +44,15 @@ ReadCmd::~ReadCmd() {
     if (vals.size()>0){
         vals.clear();
     }
-
+    while(!should_read_cmd.empty()){
+        should_read_cmd.pop();
+    }
 }
 
 void ReadCmd::getCmds() {
     cur = 0;
-    for (size_t i = 0; i< size; i++){
-        Parsing(cmds[cur++]);
+    for (cur; cur < size; cur++){
+        Parsing(cmds[cur]);
     }
 }
 
@@ -75,43 +78,65 @@ char ReadCmd::case_symb(string symb) {
     else {throw invalid_argument("ERROR IN CONDITION");}
 }
 
-//ДОБАВИТЬ СЛУЧАЙ ЗАКРЫТИЯ СКОБКИ!!!!!
 void ReadCmd::Parsing(string cmd_) {
+    bool repeat_circle = false;
     cmd = cmd_;
-    if(should_read_cmd == true){
-        int i = 0;
-        string word = "";
-        while (cmd[i]!= ' ' && cmd[i]!='(') {
-            word.push_back(cmd[i]);
-            if (cmd[i] == '}'){
-                break;
-            }
-            i ++;
+    if(!should_read_cmd.top()){
+        if (cmd_[0] == 'i' && cmd[1] == 'f' && cmd[2] == ' '){
+            count_circles_in_steps++;
         }
-
-        if (funcs.count(word) == 1) {
-            switch (word[0]) {
-                case 'i':
-                    procIf();
-                    break;
-                case 'f':
-                    procFor();
-                    break;
-                case 'w':
-                    procWhile();
-                    break;
-                case 'm':
-                    procMain();
-                    break;
-                case '}':
-                    procBrack();
-                    break;
-            }
-        } else if (dataTypes.count(word) == 1){
-            procValue(word, cmd_);
+        else if(cmd_[0] == 'f' && cmd[1] == 'o' && cmd[2] == 'r' && cmd_[3] == ' '){
+            count_circles_in_steps++;;
         }
-        else{changeValue();}
+        else if(cmd_[0] == 'w' && cmd[1] == 'h' && cmd[2] == 'i' && cmd_[3] == 'l' && cmd_[4] == 'e' && cmd[5] == ' '){
+            count_circles_in_steps++;
+        }
     }
+    if(should_read_cmd.top() || cmd_ == "}"){
+        if (cmd_ == "}" && ((count_circles_in_steps-1) >= 0)) {
+            count_circles_in_steps--;
+        }
+        else{
+            int i = 0;
+            string word = "";
+            while (cmd[i]!= ' ' && cmd[i]!='(') {
+                word.push_back(cmd[i]);
+                if (cmd[i] == '}'){
+                    break;
+                }
+                i ++;
+            }
+            if (word[0] == '*'){
+                repeat_circle = true;
+                word.erase(0,1);
+            }
+            if (funcs.count(word) == 1) {
+                switch (word[0]) {
+                    case 'i':
+                        procIf();
+                        break;
+                    case 'f':
+                        if (repeat_circle){word.insert(0, "*");}
+                        procFor();
+                        break;
+                    case 'w':
+                        if (repeat_circle){word.insert(0, "*");}
+                        procWhile();
+                        break;
+                    case 'm':
+                        procMain();
+                        break;
+                    case '}':
+                        procBrack();
+                        break;
+                }
+            } else if (dataTypes.count(word) == 1){
+                procValue(word, cmd_);
+            }
+            else{changeValue();}
+        }
+    }
+
 }
 
 //первая буква названия переменной - тип переменной
@@ -133,7 +158,7 @@ void ReadCmd::procValue(string type, string cmd_) {
                     }
                 }
                 i++;
-                for (i; cmd_[i] != ';'; i++) {
+                for (i; cmd_[i] != ';' && i < cmd_.size(); i++) {
                     if(cmd_[i] == ' '){continue;}
                     data.push_back(cmd_[i]);
                     if (i > cmd_.size()) {
@@ -311,7 +336,7 @@ void ReadCmd::changeValue() {
     string second_var;
     string data_type;
     //regex firstTypeRegex("(.*?)\\s([=|+=|-=|/=|*=])\\s(.*?);"); //var += 5;
-    regex firstTypeRegex(R"(\b\w+\s*(\+=|-=|\*=|/=|%=)\s*\w+\b)");
+    regex firstTypeRegex(R"(\b(\w+)\s*(\+=|-=|\*=|/=|%=)\s*(\w+);\b)");
     regex secondTypeRegex("(.*?)\\s=\\s(.*?)\\s([+|-|*|/])\\s(.*?);"); //var = 3+2
     smatch match;
     if (regex_search(cmd, match, firstTypeRegex)){
@@ -585,6 +610,7 @@ void ReadCmd::procIf() {
     string right = "";
     string symb = "";
     while(cmd[i]!='('){i++;}
+    i++;
     while (cmd[i]!=' '){
         left.push_back(cmd[i]);
         i++;
@@ -592,34 +618,64 @@ void ReadCmd::procIf() {
     i++;
     while (cmd[i]!= ' ') {
         symb.push_back(cmd[i]);
+        i++;
     }
     i++;
     while (cmd[i]!=')'){
         right.push_back(cmd[i]);
+        i++;
     }
+    string left_full = left;
+    string right_full = right;
+    if (vals.count(left_full.insert(0, "i")) > 0 && vals.count(right_full.insert(0, "i")) > 0){
+        left.insert(0,"i");
+        right.insert(0,"i");
+    }
+    else if (left_full.erase(0,1) == left && right_full.erase(0,1) == right &&
+    vals.count(left_full.insert(0, "f")) > 0 && vals.count(right_full.insert(0, "f")) > 0){
+        left.insert(0,"f");
+        right.insert(0,"f");
+    }
+    else if (left_full.erase(0,1) == left && right_full.erase(0,1) == right &&
+             vals.count(left_full.insert(0, "d")) > 0 && vals.count(right_full.insert(0, "d")) > 0){
+        left.insert(0,"d");
+        right.insert(0,"d");
+    }
+    else if (left_full.erase(0,1) == left && right_full.erase(0,1) == right &&
+             vals.count(left_full.insert(0, "c")) > 0 && vals.count(right_full.insert(0, "c")) > 0){
+        left.insert(0,"c");
+        right.insert(0,"c");
+    }
+    else{throw logic_error("No such val or neodinakovie types");}
     switch (case_symb(symb)) {
         case '1':
         {
             if (vals.count(left)>0 && vals.count(right)>0){
-                if (left == right){
+                if (vals[left] == vals[right]){
+                    brackets.push("{");
+                    last_func.push("i");
+                    should_read_cmd.push(true);
+                }
+                else{
+                    should_read_cmd.push(false);
+                    count_circles_in_steps = 0;
                     brackets.push("{");
                     last_func.push("i");
                 }
-                else{
-                    should_read_cmd = false;
-                }
-                break;
             }
+            break;
         }
         case '2':
         {
             if (vals.count(left)>0 && vals.count(right)>0){
-                if (left != right){
+                if (vals[left] != vals[right]){
                     brackets.push("{");
                     last_func.push("i");
+                    should_read_cmd.push(true);
                 }
                 else{
-                    should_read_cmd = false;
+                    should_read_cmd.push(false);
+                    count_circles_in_steps = 0;
                 }
             }
             break;
@@ -627,12 +683,14 @@ void ReadCmd::procIf() {
         case '3':
         {
             if (vals.count(left)>0 && vals.count(right)>0){
-                if (left > right){
+                if (vals[left] > vals[right]){
                     brackets.push("{");
                     last_func.push("i");
+                    should_read_cmd.push(true);
                 }
                 else{
-                    should_read_cmd = false;
+                    should_read_cmd.push(false);
+                    count_circles_in_steps = 0;
                 }
             }
             break;
@@ -640,12 +698,14 @@ void ReadCmd::procIf() {
         case '4':
         {
             if (vals.count(left)>0 && vals.count(right)>0){
-                if (left >= right){
+                if (vals[left] >= vals[right]){
                     brackets.push("{");
                     last_func.push("i");
+                    should_read_cmd.push(true);
                 }
                 else{
-                    should_read_cmd = false;
+                    should_read_cmd.push(false);
+                    count_circles_in_steps = 0;
                 }
             }
             break;
@@ -653,12 +713,14 @@ void ReadCmd::procIf() {
         case '5':
         {
             if (vals.count(left)>0 && vals.count(right)>0){
-                if (left < right){
+                if (vals[left] < vals[right]){
                     brackets.push("{");
                     last_func.push("i");
+                    should_read_cmd.push(true);
                 }
                 else{
-                    should_read_cmd = false;
+                    should_read_cmd.push(false);
+                    count_circles_in_steps = 0;
                 }
             }
             break;
@@ -666,12 +728,14 @@ void ReadCmd::procIf() {
         case '6':
         {
             if (vals.count(left)>0 && vals.count(right)>0){
-                if (left <= right){
+                if (vals[left] <= vals[right]){
                     brackets.push("{");
                     last_func.push("i");
+                    should_read_cmd.push(true);
                 }
                 else{
-                    should_read_cmd = false;
+                    should_read_cmd.push(false);
+                    count_circles_in_steps = 0;
                 }
             }
             break;
@@ -687,14 +751,22 @@ void ReadCmd::procMain() {
 }
 
 void ReadCmd::procWhile() {
-    regex whileRegex("while\\((.*?)\\)\\{");
+    //regex whileRegex("while\\((.*?)\\)\\{");
+    if (cmd[0] != '*'){
+        brackets.push("{");
+        last_func.push("w");
+    }
+    else{
+        cmd.erase(0,1);
+        cmds[cur].erase(0,1);
+    }
+    regex whileRegex(R"(while\s*\((.*?)\)\s*\{)");
     smatch match;
     if (regex_search(cmd, match, whileRegex)) {
         string condition = match[1].str();
-        regex conditionRegex("(.*)(.*)(.*)"); //processing condition
+        regex conditionRegex(R"((\w+)\s*(==|!=|<=|>=|<|>)\s*(\w+)\s*)"); //processing condition
         smatch match;
         if (regex_search(condition, match, conditionRegex)) {
-            brackets.push("{");
             string tmp = "";
             string first_name = match[1].str();
             string symbol = match[2].str();
@@ -728,18 +800,20 @@ void ReadCmd::procWhile() {
                 second_name.insert(0, "c");
             }
             else { throw invalid_argument("second variable is not found"); }
-
+            if (first_name[0] != second_name[0]){
+                throw logic_error("neodinakovie types");
+            }
             switch (case_symb(symbol)) {
             case '1':
             {
                 if (vals.count(first_name) > 0 && vals.count(second_name) > 0) {
-                    if (first_name == second_name) {
-                        brackets.push("{");
-                        last_func.push("w");
+                    if (vals[first_name] == vals[second_name]) {
                         last_func.push(intToString(cur));
+                        should_read_cmd.push(true);
                     }
                     else {
-                        should_read_cmd = false;
+                        should_read_cmd.push(false);
+                        count_circles_in_steps = 0;
                     }
                     break;
                 }
@@ -747,13 +821,13 @@ void ReadCmd::procWhile() {
             case '2':
             {
                 if (vals.count(first_name) > 0 && vals.count(second_name) > 0) {
-                    if (first_name != second_name) {
-                        brackets.push("{");
-                        last_func.push("w");
+                    if (vals[first_name] != vals[second_name]) {
                         last_func.push(intToString(cur));
+                        should_read_cmd.push(true);
                     }
                     else {
-                        should_read_cmd = false;
+                        should_read_cmd.push(false);
+                        count_circles_in_steps = 0;
                     }
                 }
                 break;
@@ -761,13 +835,13 @@ void ReadCmd::procWhile() {
             case '3':
             {
                 if (vals.count(first_name) > 0 && vals.count(second_name) > 0) {
-                    if (first_name > second_name) {
-                        brackets.push("{");
-                        last_func.push("w");
+                    if (vals[first_name] > vals[second_name]) {
                         last_func.push(intToString(cur));
+                        should_read_cmd.push(true);
                     }
                     else {
-                        should_read_cmd = false;
+                        should_read_cmd.push(false);
+                        count_circles_in_steps = 0;
                     }
                 }
                 break;
@@ -775,13 +849,13 @@ void ReadCmd::procWhile() {
             case '4':
             {
                 if (vals.count(first_name) > 0 && vals.count(second_name) > 0) {
-                    if (first_name >= second_name) {
-                        brackets.push("{");
-                        last_func.push("w");
+                    if (vals[first_name] >= vals[second_name]) {
                         last_func.push(intToString(cur));
+                        should_read_cmd.push(true);
                     }
                     else {
-                        should_read_cmd = false;
+                        should_read_cmd.push(false);
+                        count_circles_in_steps = 0;
                     }
                 }
                 break;
@@ -789,13 +863,13 @@ void ReadCmd::procWhile() {
             case '5':
             {
                 if (vals.count(first_name) > 0 && vals.count(second_name) > 0) {
-                    if (first_name < second_name) {
-                        brackets.push("{");
-                        last_func.push("w");
+                    if (vals[first_name] < vals[second_name]) {
                         last_func.push(intToString(cur));
+                        should_read_cmd.push(true);
                     }
                     else {
-                        should_read_cmd = false;
+                        should_read_cmd.push(false);
+                        count_circles_in_steps = 0;
                     }
                 }
                 break;
@@ -803,13 +877,13 @@ void ReadCmd::procWhile() {
             case '6':
             {
                 if (vals.count(first_name) > 0 && vals.count(second_name) > 0) {
-                    if (first_name <= second_name) {
-                        brackets.push("{");
-                        last_func.push("w");
+                    if (vals[first_name] <= vals[second_name]) {
                         last_func.push(intToString(cur));
+                        should_read_cmd.push(true);
                     }
                     else {
-                        should_read_cmd = false;
+                        should_read_cmd.push(false);
+                        count_circles_in_steps = 0;
                     }
                 }
                 break;
@@ -821,154 +895,323 @@ void ReadCmd::procWhile() {
 }
 
 void ReadCmd::procFor() {
-    regex forRegex("for\\(((.*?)\\s(.*?));(.*?);(.*?)\\)\\{");
-    smatch match;
-    int i = 0;
-    if (regex_search(cmd, match, forRegex)){
-        string type = match[2].str();
-        string initialization = match[1].str();
-        string condition = match[4].str();
-        string increment = match[5].str();
+    if (cmd[0] != '*'){
         brackets.push("{");
-        procValue(type, initialization); //processing of initialization
-        regex conditionRegex("(.*)([<|>|==|!=|>=|<=])(.*)"); //processing condition
+        last_func.push("f");
+        regex forRegex(R"(for\s*\(\s*((.*?)\s.*?)\s*;\s*(.*?)\s*;\s*(.*?)\s*\)\s*\{)");
         smatch match;
-        if(regex_search(condition, match, conditionRegex)){
-            string tmp = "";
-            string first_name = match[1].str();
-            string symbol = match[2].str();
-            string second_name = match[3].str();
-            tmp = first_name;
-            if (vals.count(tmp.insert(0, "i"))==1){
-                first_name.insert(0, "i");
-            }
-            else if (tmp.erase(0,1) == first_name && vals.count(tmp.insert(0, "d"))==1){
-                first_name.insert(0, "d");
-            }
-            else if (tmp.erase(0,1) == first_name && vals.count(tmp.insert(0, "f"))==1){
-                first_name.insert(0, "f");
-            }
-            else if (tmp.erase(0,1) == first_name && vals.count(tmp.insert(0, "c"))==1){
-                first_name.insert(0, "c");
-            }
-            else{throw invalid_argument ("first variable not found in for loop");}
+        int i = 0;
+        if (regex_search(cmd, match, forRegex)){
+            string type = match[2].str();
+            string initialization = match[1].str();
+            string condition = match[3].str();
+            string increment = match[4].str();
+            procValue(type, initialization); //processing of initialization
+            regex conditionRegex (R"((\w+)\s*(==|!=|<=|>=|<|>)\s*(\w+))");//processing condition
+            //regex conditionRegex(R"((.*?)\s([<|>|==|!=|>=|<=])\s(.*?))"); //processing condition
+            smatch match;
+            if(regex_search(condition, match, conditionRegex)){
+                string tmp = "";
+                string first_name = match[1].str();
+                string symbol = match[2].str();
+                string second_name = match[3].str();
+                tmp = first_name;
+                if (vals.count(tmp.insert(0, "i"))==1){
+                    first_name.insert(0, "i");
+                }
+                else if (tmp.erase(0,1) == first_name && vals.count(tmp.insert(0, "d"))==1){
+                    first_name.insert(0, "d");
+                }
+                else if (tmp.erase(0,1) == first_name && vals.count(tmp.insert(0, "f"))==1){
+                    first_name.insert(0, "f");
+                }
+                else if (tmp.erase(0,1) == first_name && vals.count(tmp.insert(0, "c"))==1){
+                    first_name.insert(0, "c");
+                }
+                else{throw invalid_argument ("first variable not found in for loop");}
 
-            tmp = second_name;
-            if (vals.count(tmp.insert(0, "i"))==1){
-                second_name.insert(0, "i");
-            }
-            else if (tmp.erase(0,1) == first_name && vals.count(tmp.insert(0, "d"))==1){
-                second_name.insert(0, "d");//////////стояло i, скорее всего ошибся, исправила
-            }
-            else if (tmp.erase(0,1) == first_name && vals.count(tmp.insert(0, "f"))==1){
-                second_name.insert(0, "f");
-            }
-            else if (tmp.erase(0,1) == first_name && vals.count(tmp.insert(0, "c"))==1){
-                second_name.insert(0, "c");
-            }
-            else{throw invalid_argument ("second variable not found in for loop");}
+                tmp = second_name;
+                if (vals.count(tmp.insert(0, "i"))==1){
+                    second_name.insert(0, "i");
+                }
+                else if (tmp.erase(0,1) == first_name && vals.count(tmp.insert(0, "d"))==1){
+                    second_name.insert(0, "d");
+                }
+                else if (tmp.erase(0,1) == first_name && vals.count(tmp.insert(0, "f"))==1){
+                    second_name.insert(0, "f");
+                }
+                else if (tmp.erase(0,1) == first_name && vals.count(tmp.insert(0, "c"))==1){
+                    second_name.insert(0, "c");
+                }
+                else{throw invalid_argument ("second variable not found in for loop");}
+                if (first_name[0] != second_name[0]){
+                    throw logic_error("neodinakovie types");
+                }
 
-            if (increment[1] == '+' && increment[2] == '+'){ //processing inc/decrement
-                tmp = "+";
-            }
-            else if (increment[1] == '-' && increment[2] == '-'){
-                tmp = "-";
-            }
-            else{throw invalid_argument("increment or decrement is invalid");}
+//                if (increment[1] == '+' && increment[2] == '+'){ //processing inc/decrement
+//                    tmp = "+";
+//                }
+//                else if (increment[1] == '-' && increment[2] == '-'){
+//                    tmp = "-";
+//                }
+//                else{throw invalid_argument("increment or decrement is invalid");}
 
-            switch (case_symb(symbol)) {
-                case '1':
-                {
-                    if (vals.count(first_name)>0 && vals.count(second_name)>0){
-                        if (first_name == second_name){
-                            brackets.push("{");
-                            last_func.push("f");
-                            last_func.push(intToString(cur));
+                switch (case_symb(symbol)) {
+                    case '1':
+                    {
+                        if (vals.count(first_name)>0 && vals.count(second_name)>0){
+                            if (vals[first_name] == vals[second_name]){
+                                last_func.push(intToString(cur));
+                                should_read_cmd.push(true);
+                            }
+                            else{
+                                should_read_cmd.push(false);
+                                count_circles_in_steps = 0;
+                            }
+                            break;
                         }
-                        else{
-                            should_read_cmd = false;
+                    }
+                    case '2':
+                    {
+                        if (vals.count(first_name)>0 && vals.count(second_name)>0){
+                            if (vals[first_name] != vals[second_name]){
+                                last_func.push(intToString(cur));
+                                should_read_cmd.push(true);
+                            }
+                            else{
+                                should_read_cmd.push(false);
+                                count_circles_in_steps = 0;
+                            }
                         }
                         break;
                     }
-                }
-                case '2':
-                {
-                    if (vals.count(first_name)>0 && vals.count(second_name)>0){
-                        if (first_name != second_name){
-                            brackets.push("{");
-                            last_func.push("f");
-                            last_func.push(intToString(cur));
+                    case '3':
+                    {
+                        if (vals.count(first_name)>0 && vals.count(second_name)>0){
+                            if (vals[first_name] > vals[second_name]){
+                                last_func.push(intToString(cur));
+                                should_read_cmd.push(true);
+                            }
+                            else{
+                                should_read_cmd.push(false);
+                                count_circles_in_steps = 0;
+                            }
                         }
-                        else{
-                            should_read_cmd = false;
-                        }
+                        break;
                     }
-                    break;
-                }
-                case '3':
-                {
-                    if (vals.count(first_name)>0 && vals.count(second_name)>0){
-                        if (first_name > second_name){
-                            brackets.push("{");
-                            last_func.push("f");
-                            last_func.push(intToString(cur));
+                    case '4':
+                    {
+                        if (vals.count(first_name)>0 && vals.count(second_name)>0){
+                            if (vals[first_name] >= vals[second_name]){
+                                last_func.push(intToString(cur));
+                                should_read_cmd.push(true);
+                            }
+                            else{
+                                should_read_cmd.push(false);
+                                count_circles_in_steps = 0;
+                            }
                         }
-                        else{
-                            should_read_cmd = false;
-                        }
+                        break;
                     }
-                    break;
-                }
-                case '4':
-                {
-                    if (vals.count(first_name)>0 && vals.count(second_name)>0){
-                        if (first_name >= second_name){
-                            brackets.push("{");
-                            last_func.push("f");
-                            last_func.push(intToString(cur));
+                    case '5':
+                    {
+                        if (vals.count(first_name)>0 && vals.count(second_name)>0){
+                            if (vals[first_name] < vals[second_name]){
+                                last_func.push(intToString(cur));
+                                should_read_cmd.push(true);
+                            }
+                            else{
+                                should_read_cmd.push(false);
+                                count_circles_in_steps = 0;
+                            }
                         }
-                        else{
-                            should_read_cmd = false;
-                        }
+                        break;
                     }
-                    break;
-                }
-                case '5':
-                {
-                    if (vals.count(first_name)>0 && vals.count(second_name)>0){
-                        if (first_name < second_name){
-                            brackets.push("{");
-                            last_func.push("f");
-                            last_func.push(intToString(cur));
+                    case '6':
+                    {
+                        if (vals.count(first_name)>0 && vals.count(second_name)>0){
+                            if (vals[first_name] <= vals[second_name]){
+                                last_func.push(intToString(cur));
+                                should_read_cmd.push(true);
+                            }
+                            else{
+                                should_read_cmd.push(false);
+                                count_circles_in_steps = 0;
+                            }
                         }
-                        else{
-                            should_read_cmd = false;
-                        }
+                        break;
                     }
-                    break;
+
                 }
-                case '6':
-                {
-                    if (vals.count(first_name)>0 && vals.count(second_name)>0){
-                        if (first_name <= second_name){
-                            brackets.push("{");
-                            last_func.push("i");
-                            last_func.push(intToString(cur));
-                        }
-                        else{
-                            should_read_cmd = false;
-                        }
-                    }
-                    break;
-                }
+
 
             }
-
-
+            else{throw invalid_argument("incorrect initialization of the For loop");}
         }
         else{throw invalid_argument("incorrect initialization of the For loop");}
     }
-    else{throw invalid_argument("incorrect initialization of the For loop");}
+    else{
+        cmd = cmd.erase(0,1);
+        cmds[cur].erase(0,1);
+        regex forRegex(R"(for\s*\(\s*(.*?)\s(.*?)\s*;\s*(.*?)\s*;\s*(.*?)\s*\)\s*\{)");
+        smatch match;
+        int i = 0;
+        if (regex_search(cmd, match, forRegex)){
+            string type = match[1].str();
+            string val = match[2].str();
+            string condition = match[3].str();
+            string increment = match[4].str();
+            string name = "i";
+            string tmp = "";
+            //procValue(type, initialization); //processing of initialization
+            while(val[i]!=' '){
+                name.push_back(val[i]);
+                i++;
+            }
+            if (increment[1] == '+' && increment[2] == '+'){ //processing inc/decrement
+                if (vals.count(name)>0){
+                    vals[name]++;
+                }
+            }
+            else if (increment[1] == '-' && increment[2] == '-'){
+                if (vals.count(name)>0){
+                    vals[name]++;
+                }
+            }
+            else{throw invalid_argument("increment or decrement is invalid");}
+            regex conditionRegex (R"((\w+)\s*(==|!=|<=|>=|<|>)\s*(\w+))");//processing condition
+            //regex conditionRegex(R"((.*?)\s([<|>|==|!=|>=|<=])\s(.*?))"); //processing condition
+            smatch match;
+            if(regex_search(condition, match, conditionRegex)){
+                string first_name = match[1].str();
+                string symbol = match[2].str();
+                string second_name = match[3].str();
+                tmp = first_name;
+                if (vals.count(tmp.insert(0, "i"))==1){
+                    first_name.insert(0, "i");
+                }
+                else if (tmp.erase(0,1) == first_name && vals.count(tmp.insert(0, "d"))==1){
+                    first_name.insert(0, "d");
+                }
+                else if (tmp.erase(0,1) == first_name && vals.count(tmp.insert(0, "f"))==1){
+                    first_name.insert(0, "f");
+                }
+                else if (tmp.erase(0,1) == first_name && vals.count(tmp.insert(0, "c"))==1){
+                    first_name.insert(0, "c");
+                }
+                else{throw invalid_argument ("first variable not found in for loop");}
+
+                tmp = second_name;
+                if (vals.count(tmp.insert(0, "i"))==1){
+                    second_name.insert(0, "i");
+                }
+                else if (tmp.erase(0,1) == first_name && vals.count(tmp.insert(0, "d"))==1){
+                    second_name.insert(0, "d");
+                }
+                else if (tmp.erase(0,1) == first_name && vals.count(tmp.insert(0, "f"))==1){
+                    second_name.insert(0, "f");
+                }
+                else if (tmp.erase(0,1) == first_name && vals.count(tmp.insert(0, "c"))==1){
+                    second_name.insert(0, "c");
+                }
+                else{throw invalid_argument ("second variable not found in for loop");}
+                if (first_name[0] != second_name[0]){
+                    throw logic_error("neodinakovie types");
+                }
+
+                switch (case_symb(symbol)) {
+                    case '1':
+                    {
+                        if (vals.count(first_name)>0 && vals.count(second_name)>0){
+                            if (vals[first_name] == vals[second_name]){
+                                last_func.push(intToString(cur));
+                                should_read_cmd.push(true);
+                            }
+                            else{
+                                should_read_cmd.push(false);
+                                count_circles_in_steps = 0;
+                            }
+                            break;
+                        }
+                    }
+                    case '2':
+                    {
+                        if (vals.count(first_name)>0 && vals.count(second_name)>0){
+                            if (vals[first_name] != vals[second_name]){
+                                last_func.push(intToString(cur));
+                                should_read_cmd.push(true);
+                            }
+                            else{
+                                should_read_cmd.push(false);
+                                count_circles_in_steps = 0;
+                            }
+                        }
+                        break;
+                    }
+                    case '3':
+                    {
+                        if (vals.count(first_name)>0 && vals.count(second_name)>0){
+                            if (vals[first_name] > vals[second_name]){
+                                last_func.push(intToString(cur));
+                                should_read_cmd.push(true);
+                            }
+                            else{
+                                should_read_cmd.push(false);
+                                count_circles_in_steps = 0;
+                            }
+                        }
+                        break;
+                    }
+                    case '4':
+                    {
+                        if (vals.count(first_name)>0 && vals.count(second_name)>0){
+                            if (vals[first_name] >= vals[second_name]){
+                                last_func.push(intToString(cur));
+                                should_read_cmd.push(true);
+                            }
+                            else{
+                                should_read_cmd.push(false);
+                                count_circles_in_steps = 0;
+                            }
+                        }
+                        break;
+                    }
+                    case '5':
+                    {
+                        if (vals.count(first_name)>0 && vals.count(second_name)>0){
+                            if (vals[first_name] < vals[second_name]){
+                                last_func.push(intToString(cur));
+                                should_read_cmd.push(true);
+                            }
+                            else{
+                                should_read_cmd.push(false);
+                                count_circles_in_steps = 0;
+                            }
+                        }
+                        break;
+                    }
+                    case '6':
+                    {
+                        if (vals.count(first_name)>0 && vals.count(second_name)>0){
+                            if (vals[first_name] <= vals[second_name]){
+                                last_func.push(intToString(cur));
+                                should_read_cmd.push(true);
+                            }
+                            else{
+                                should_read_cmd.push(false);
+                                count_circles_in_steps = 0;
+                            }
+                        }
+                        break;
+                    }
+
+                }
+
+            }
+            else{throw invalid_argument("incorrect initialization of the For loop");}
+        }
+    }
+
 }
 
 void ReadCmd::procBrack() {
@@ -977,7 +1220,6 @@ void ReadCmd::procBrack() {
     switch (last_function[0]) {
         case 'i': {
             string val = brackets.top();
-            
             pair<string, double> tmp;
             while(val != "{"){
                 if(vals.count(val))
@@ -989,9 +1231,11 @@ void ReadCmd::procBrack() {
                     vals.erase(val);
                 }
                 brackets.pop();
+                vals.erase(val);
                 val = brackets.top();
             }
             brackets.pop();
+            should_read_cmd.pop();
             break;
         }
         default:
@@ -999,16 +1243,37 @@ void ReadCmd::procBrack() {
             string circle_begin = last_function;
 //            last_function = brackets.top();
 //            brackets.pop();
-            if (last_function[0] == 'w' || last_function[0] == 'f'){
-                if (!should_read_cmd){
+            if (last_function[0] >= 48 && last_function[0] <= 57){
+                if (!should_read_cmd.top()){
                     string val = brackets.top();
                     while(val != "{"){
                         brackets.pop();
                         val = brackets.top();
                     }
                     brackets.pop();
+                    should_read_cmd.pop();
                 }
-                else{cur = stringToInt(circle_begin); brackets.pop();}
+                else{
+                    int num_of_circle = stringToInt(circle_begin);
+                    if (cmds[num_of_circle][0] == '*'){
+                        cmds[num_of_circle].erase(0,1);
+                    }
+                    cmds[num_of_circle].insert(0, "*");
+                    cur = num_of_circle-1;
+                    should_read_cmd.pop();
+                }
+            }
+            else if (last_function[0] == 'w' || last_function[0] == 'f'){
+                if (!should_read_cmd.top()){
+                    string val = brackets.top();
+                    while(val != "{"){
+                        brackets.pop();
+                        vals.erase(val);
+                        val = brackets.top();
+                    }
+                    brackets.pop();
+                    should_read_cmd.pop();
+                }
             }
             else if(last_function[0] == 'm'){
                 string val = brackets.top();
