@@ -977,7 +977,17 @@ void ReadCmd::procBrack() {
     switch (last_function[0]) {
         case 'i': {
             string val = brackets.top();
+            
+            pair<string, double> tmp;
             while(val != "{"){
+                if(vals.count(val))
+                {
+                    string name = val;
+                    name.erase(0, 1);
+                    tmp = make_pair(name, vals[val]);
+                    resVals.push_back(tmp);
+                    vals.erase(val);
+                }
                 brackets.pop();
                 val = brackets.top();
             }
@@ -1002,9 +1012,17 @@ void ReadCmd::procBrack() {
             }
             else if(last_function[0] == 'm'){
                 string val = brackets.top();
+                pair<string, double> tmp;
                 while(val != "{"){
+                    if (vals.count(val))
+                    {
+                        string name = val;
+                        name.erase(0, 1);
+                        tmp = make_pair(name, vals[val]);
+                        resVals.push_back(tmp);
+                        vals.erase(val);
+                    }
                     brackets.pop();
-                    vals.erase(val);
                     val = brackets.top();
                 }
                 brackets.pop();
@@ -1013,6 +1031,15 @@ void ReadCmd::procBrack() {
             break;
         }
     }
+}
+double ReadCmd::findResVal(string name)
+{
+    for (pair < string, double> elem: resVals)
+    {
+        if (elem.first == name)
+            return elem.second;
+    }
+    throw invalid_argument("There is no val with such name");
 }
 
 int ReadCmd::stringToInt(string data)
