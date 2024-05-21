@@ -2,6 +2,7 @@
 #include <string>
 #include <map>
 #include<stack>
+#include <vector>
 #pragma once
  using namespace std;
  //Данный класс содержит в себе строку до символа ";".
@@ -14,8 +15,9 @@ private:
     stack<string> brackets; //здесь лежат переменные из блока и открывающиеся скобки
     stack<string> last_func; //здесь лежат названия последних функций и номера строк начал функций для for и while
     string cmd; //считываемая команда (строчка)
-    map<string, double> vals; //мапа переменных
-    map<string, int> dataTypes;//мапа типов данных
+    map<string, double> vals; //мапа переменных, первая букква имени - тип данных
+    map<string, int> dataTypes;//мапа типов данных 
+    vector<pair <string, double> > resVals; //вектор отработанных переменных имя+значение в double
     map<string, int> funcs; //мапа доступных функций
     map<char, int> ops; //мапа доступных операций
     char case_symb(string symb); //функция, возращающая спец. код знака сравнения
@@ -41,5 +43,6 @@ public:
     void procMain(); //обработка main
     void procBrack(); //обработка закрывающейся фигурной скобки
     char stringToChar(string data); //преобразование строки в char
+    double findResVal(string name);//поиск финального значения отработанной переменной
     friend ostream &operator<<(ostream &ostr, const ReadCmd &rc); //вывод строки (при исключениях) (можно выводить и номер строки)
 };
