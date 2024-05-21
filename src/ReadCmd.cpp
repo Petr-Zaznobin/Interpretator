@@ -4,19 +4,20 @@ using namespace std;
 
 ReadCmd::ReadCmd(string* cmds_, size_t count) {
     size = count;
-    memcpy(cmds, cmds_, size);
-    map<string, int> dataTypes = {{"int",1},
+    cmds = new string[size];
+    copy(cmds_, cmds_ + count, cmds);
+    dataTypes = {{"int",1},
                               {"double", 1},
                               {"float",  1},
                               {"char",   1}};
-    map<string, int> funcs = {{"for",   1},
+    funcs = {{"for",   1},
                               {"while", 1},
                               {"if",    1},
                               {"main",  1},
                               {"input", 1},
                               {"print", 1},
                               {"}",     1}};
-    map<char, int> ops = {{'+', 1},
+    ops = {{'+', 1},
                           {'-', 1},
                           {'*', 1},
                           {'/', 1},
@@ -24,13 +25,29 @@ ReadCmd::ReadCmd(string* cmds_, size_t count) {
 }
 
 ReadCmd::~ReadCmd() {
-    cmd = {};
-    vals.clear();
+    cmd = "";
+    cmds = {};
+    size = 0;
+    cur = 0;
+    if (!brackets.empty()){
+        throw logic_error("brackets isn't empty in the end");
+    }
+    if (!last_func.empty()){
+        throw logic_error("last_func isn't empty in the end");
+    }
+
+    delete[]cmds;
+    ops.clear();
     funcs.clear();
+    dataTypes.clear();
+    if (vals.size()>0){
+        vals.clear();
+    }
+
 }
 
 void ReadCmd::getCmds() {
-    int cur = 0;
+    cur = 0;
     for (size_t i = 0; i< size; i++){
         Parsing(cmds[cur++]);
     }
@@ -64,12 +81,16 @@ void ReadCmd::Parsing(string cmd_) {
     if(should_read_cmd == true){
         int i = 0;
         string word = "";
-        while (cmd[i]!= ' ' || cmd[i]!='(') {
+        while (cmd[i]!= ' ' && cmd[i]!='(') {
             word.push_back(cmd[i]);
+            if (cmd[i] == '}'){
+                break;
+            }
             i ++;
         }
-        if (funcs.count(word) == 1) {//ДОБАВИТЬ СЛУЧАЙ ЗАКРЫТИЯ СКОБКИ!!!!!
-            switch (word[i]) {
+
+        if (funcs.count(word) == 1) {
+            switch (word[0]) {
                 case 'i':
                     procIf();
                     break;
@@ -86,9 +107,10 @@ void ReadCmd::Parsing(string cmd_) {
                     procBrack();
                     break;
             }
-        } else {
-            procValue(word, cmd);
+        } else if (dataTypes.count(word) == 1){
+            procValue(word, cmd_);
         }
+        else{changeValue();}
     }
 }
 
@@ -101,7 +123,7 @@ void ReadCmd::procValue(string type, string cmd_) {
         name.push_back(type[0]);
         switch (type[0]) {
             case 'i': {
-                for (int i = type.size() + 1; cmd_[i] != ' '; i++) {
+                for (i = type.size() + 1; cmd_[i] != ' '; i++) {
                     name.push_back(cmd_[i]);
                 }
                 while (cmd_[i] != '=') {
@@ -112,7 +134,11 @@ void ReadCmd::procValue(string type, string cmd_) {
                 }
                 i++;
                 for (i; cmd_[i] != ';'; i++) {
+                    if(cmd_[i] == ' '){continue;}
                     data.push_back(cmd_[i]);
+                    if (i > cmd_.size()) {
+                        throw length_error("No symbol ; in assignment");
+                    }
                 }
                 int intData = stringToInt(data);
                 if (vals.count(name)>0)
@@ -284,7 +310,8 @@ void ReadCmd::changeValue() {
     string first_var;
     string second_var;
     string data_type;
-    regex firstTypeRegex("(.*?)\\s([=|+=|-=|/=|*=])\\s(.*?);"); //var += 5;
+    //regex firstTypeRegex("(.*?)\\s([=|+=|-=|/=|*=])\\s(.*?);"); //var += 5;
+    regex firstTypeRegex(R"(\b\w+\s*(\+=|-=|\*=|/=|%=)\s*\w+\b)");
     regex secondTypeRegex("(.*?)\\s=\\s(.*?)\\s([+|-|*|/])\\s(.*?);"); //var = 3+2
     smatch match;
     if (regex_search(cmd, match, firstTypeRegex)){
@@ -960,8 +987,8 @@ void ReadCmd::procBrack() {
         default:
         {
             string circle_begin = last_function;
-            last_function = brackets.top();
-            brackets.pop();
+//            last_function = brackets.top();
+//            brackets.pop();
             if (last_function[0] == 'w' || last_function[0] == 'f'){
                 if (!should_read_cmd){
                     string val = brackets.top();
@@ -977,6 +1004,7 @@ void ReadCmd::procBrack() {
                 string val = brackets.top();
                 while(val != "{"){
                     brackets.pop();
+                    vals.erase(val);
                     val = brackets.top();
                 }
                 brackets.pop();

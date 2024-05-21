@@ -1,6 +1,5 @@
 #include "gtest.h"
 #include "ReadCmd.h"
-using namespace std;
 
 TEST(ReadCmd, can_create_ReadCmd)
 {
@@ -115,23 +114,22 @@ TEST(ReadCmd, can_parse_cmd_with_new_value)
 {
 	string* cmds = new string[3];
 	cmds[0] = "main() {";
-	cmds[1] = "int i;";
+	cmds[1] = "int i = 0;"; //НЕЛЬЗЯ ОСТАВЛЯТЬ ПЕРЕМЕННУЮ НЕИНИЦИАЛИЗИРОВАННОЙ!!!
 	cmds[2] = "}";
-	ReadCmd code(cmds, 3);
-
+	ReadCmd code(cmds, size_t(3));
 	ASSERT_NO_THROW(code.getCmds());
 }
-TEST(ReadCmd, can_parse_cmd_with_value)
-{
-	string* cmds = new string[4];
-	cmds[0] = "main() {";
-	cmds[1] = "int i;";
-	cmds[2] = "i = 5;";
-	cmds[3] = "}";
-	ReadCmd code(cmds, 4);
-
-	ASSERT_NO_THROW(code.getCmds());
-}
+//TEST(ReadCmd, can_parse_cmd_with_value) //НЕЛЬЗЯ ОСТАВЛЯТЬ ПЕРЕМЕННУЮ НЕИНИЦИАЛИЗИРОВАННОЙ!!!
+//{
+//	string* cmds = new string[4];
+//	cmds[0] = "main() {";
+//	cmds[1] = "int i;";
+//	cmds[2] = "i = 5;";
+//	cmds[3] = "}";
+//	ReadCmd code(cmds, 4);
+//
+//	ASSERT_NO_THROW(code.getCmds());
+//}
 //getCmds??
 //parsing??
 
@@ -163,7 +161,7 @@ TEST(ReadCmd, can_parse_cmds_with_math_operation_save_in_new_value)
 	cmds[0] = "main() {";
 	cmds[1] = "int i = 4;";
 	cmds[2] = "int a = 3;";
-	cmds[3] = "int b;";
+	cmds[3] = "int b = 0";
 	cmds[4] = "b = i + a;";
 	cmds[5] = "}";
 	ReadCmd code(cmds, 6);
@@ -176,14 +174,15 @@ TEST(ReadCmd, correct_parse_cmds_with_math_operation_save_in_new_value)
 	cmds[0] = "main() {";
 	cmds[1] = "int i = 4;";
 	cmds[2] = "int a = 3;";
-	cmds[3] = "int b;";
+	cmds[3] = "int b = 0;";
 	cmds[4] = "b = i + a;";
 	cmds[5] = "}";
 	ReadCmd code(cmds, 6);
 	code.getCmds();
 	//EXPECT_EQ(7,);
 }
-TEST(ReadCmd, can_parse_cmds_with_if)
+
+TEST(ReadCmd, can_parse_cmds_with_if_corr)
 {
 	string* cmds = new string[8];
 	cmds[0] = "main() {";
@@ -459,24 +458,24 @@ TEST(ReadCmd, can_parse_cmds_with_for_and_if_inside)
 
 	ASSERT_NO_THROW(code.getCmds());
 }
-TEST(ReadCmd, can_parse_cmds_with_for_and_if_inside)
-{
-	string* cmds = new string[11];
-	cmds[0] = "main() {";
-	cmds[1] = "int i = 0;";
-	cmds[2] = "int b = 2;";
-	cmds[3] = "int c = 0;";
-	cmds[4] = "for (b = 1; b < 3; b++) {";
-	cmds[5] = "if (i < 4) {";
-	cmds[6] = "c = b + i;";
-	cmds[7] = "i = i + 1;";
-	cmds[8] = "}";
-	cmds[9] = "}";
-	cmds[10] = "}";
-	ReadCmd code(cmds, 11);
-	code.getCmds();
-	//EXPECT_EQ(4,);
-}
+//TEST(ReadCmd, can_parse_cmds_with_for_and_if_inside)
+//{
+//	string* cmds = new string[11];
+//	cmds[0] = "main() {";
+//	cmds[1] = "int i = 0;";
+//	cmds[2] = "int b = 2;";
+//	cmds[3] = "int c = 0;";
+//	cmds[4] = "for (b = 1; b < 3; b++) {";
+//	cmds[5] = "if (i < 4) {";
+//	cmds[6] = "c = b + i;";
+//	cmds[7] = "i = i + 1;";
+//	cmds[8] = "}";
+//	cmds[9] = "}";
+//	cmds[10] = "}";
+//	ReadCmd code(cmds, 11);
+//	code.getCmds();
+//	//EXPECT_EQ(4,);
+//}
 TEST(ReadCmd, can_parse_cmds_with_if_and_while_inside)
 {
 	string* cmds = new string[10];
