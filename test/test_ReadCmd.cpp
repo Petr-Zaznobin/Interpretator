@@ -195,7 +195,7 @@ TEST(ReadCmd, correct_parse_cmds_with_if)
 	cmds[6] = "}";
 	cmds[7] = "}";
 	ReadCmd code(cmds, 8);
-
+	code.getCmds();
 	EXPECT_EQ(8, code.findResVal("b"));
 
 }
@@ -211,7 +211,7 @@ TEST(ReadCmd, correct_parse_cmds_with_wrong_if)
 	cmds[6] = "}";
 	cmds[7] = "}";
 	ReadCmd code(cmds, 8);
-
+	code.getCmds();
 	EXPECT_EQ(0, code.findResVal("b"));
 
 }
@@ -287,7 +287,7 @@ TEST(ReadCmd, can_parse_cmds_with_while_and_if_inside)
     cmds[4] = "int d = 3;";
 	cmds[5] = "while (b <= c) {";
 	cmds[6] = "if (i > d) {";
-	cmds[7] = "b = b + i;";
+	cmds[7] = "b += i;";
 	cmds[8] = "}";
 	cmds[9] = "}";
 	cmds[10] = "}";
@@ -472,7 +472,7 @@ TEST(ReadCmd, can_parse_cmds_with_for_and_if_inside)
 
 	ASSERT_NO_THROW(code.getCmds());
 }
-TEST(ReadCmd, can_parse_cmds_with_for_and_if_inside)
+TEST(ReadCmd, correct_parse_cmds_with_for_and_if_inside)
 {
 	string* cmds = new string[12];
 	cmds[0] = "main() {";
@@ -489,7 +489,7 @@ TEST(ReadCmd, can_parse_cmds_with_for_and_if_inside)
 	cmds[11] = "}";
 	ReadCmd code(cmds, 12);
 	code.getCmds();
-	EXPECT_EQ(4.0, code.findResVal("c"));
+	EXPECT_EQ(3.0, code.findResVal("c"));
 }
 TEST(ReadCmd, can_parse_cmds_with_if_and_while_inside)
 {
