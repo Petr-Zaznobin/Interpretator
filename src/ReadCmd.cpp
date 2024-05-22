@@ -676,6 +676,8 @@ void ReadCmd::procIf() {
                 else{
                     should_read_cmd.push(false);
                     count_circles_in_steps = 0;
+                    brackets.push("{");
+                    last_func.push("i");
                 }
             }
             break;
@@ -691,6 +693,8 @@ void ReadCmd::procIf() {
                 else{
                     should_read_cmd.push(false);
                     count_circles_in_steps = 0;
+                    brackets.push("{");
+                    last_func.push("i");
                 }
             }
             break;
@@ -706,6 +710,8 @@ void ReadCmd::procIf() {
                 else{
                     should_read_cmd.push(false);
                     count_circles_in_steps = 0;
+                    brackets.push("{");
+                    last_func.push("i");
                 }
             }
             break;
@@ -721,6 +727,8 @@ void ReadCmd::procIf() {
                 else{
                     should_read_cmd.push(false);
                     count_circles_in_steps = 0;
+                    brackets.push("{");
+                    last_func.push("i");
                 }
             }
             break;
@@ -736,6 +744,8 @@ void ReadCmd::procIf() {
                 else{
                     should_read_cmd.push(false);
                     count_circles_in_steps = 0;
+                    brackets.push("{");
+                    last_func.push("i");
                 }
             }
             break;
@@ -1306,6 +1316,13 @@ double ReadCmd::findResVal(string name)
     }
     throw invalid_argument("There is no val with such name");
 }
+void ReadCmd::printResVal()
+{
+    for (pair < string, double> elem : resVals)
+    {
+        cout << elem.first << " = " << elem.second << endl;
+    }
+}
 
 int ReadCmd::stringToInt(string data)
 {
@@ -1506,3 +1523,4 @@ float ReadCmd::stringToFloat(string data)
 
 	return res;
 }
+
