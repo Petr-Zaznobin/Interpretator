@@ -16,7 +16,7 @@ int main(){
     string cmd;
     ifstream fin;
     size_t count = 0;
-    fin.open("hello.txt"); // окрываем файл для чтения
+    fin.open("D:\\projects\\Interpretator\\hello.txt"); // окрываем файл для чтения
     if (!fin.is_open()) {
         cout << "ERROR OPEN!";
     }
@@ -29,7 +29,7 @@ int main(){
     }
     fin.close();     // закрываем файл
 
-    fin.open("hello.txt"); // окрываем файл для чтения
+    fin.open("D:\\projects\\Interpretator\\hello.txt"); // окрываем файл для чтения
     string* cmds = new string[count];
     if (!fin.is_open()) {
         cout << "ERROR OPEN!";
@@ -43,5 +43,6 @@ int main(){
     }
     fin.close();     // закрываем файл
     ReadCmd rc(cmds, count);
-
+    rc.getCmds();
+    rc.printResVal();
 }
