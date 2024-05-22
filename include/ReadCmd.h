@@ -30,13 +30,11 @@ public:
     void Parsing(string cmd_); //разбор строки на составляющие (функции, переменные, операции)
     void procValue(string type, string cmd_); //обработка объявления переменной
     void changeValue(); //обработка изменения переменной
-    void findfun(); //Возвращает определенный флаг если while, for, if, else, else if, print, input,  нет
     int stringToInt(string data); //преобразование строки в int
     double stringToDouble(string data); //преобразование строки в double
     float stringToFloat(string data); //преобразование строки в float
     string intToString(int data); //преобразование int в string
     void doubleCheck(string data);
-   // bool isDigit(const char& first_symbol);
     bool isDigit(char first_symbol);
     void procIf(); //обработка if
     void procWhile(); //обработка while
@@ -45,5 +43,5 @@ public:
     void procBrack(); //обработка закрывающейся фигурной скобки
     char stringToChar(string data); //преобразование строки в char
     double findResVal(string name);//поиск финального значения отработанной переменной
-    friend ostream &operator<<(ostream &ostr, const ReadCmd &rc); //вывод строки (при исключениях) (можно выводить и номер строки)
+    void printResVal(); //вывод всех переменных
 };
