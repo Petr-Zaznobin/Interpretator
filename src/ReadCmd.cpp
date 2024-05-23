@@ -14,8 +14,6 @@ ReadCmd::ReadCmd(string* cmds_, size_t count) {
                               {"while", 1},
                               {"if",    1},
                               {"main",  1},
-                              {"input", 1},
-                              {"print", 1},
                               {"}",     1}};
     ops = {{'+', 1},
                           {'-', 1},
